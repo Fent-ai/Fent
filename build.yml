@@ -1,0 +1,44 @@
+# Builds ECUManagerSidecar.exe on GitHub's Windows machines every time the code changes,
+# then publishes it as a downloadable release. No Visual Studio needed on your PC.
+name: Build sidecar
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        shell: pwsh
+        run: |
+          $proj = Get-ChildItem -Recurse -Filter ECUManagerSidecar.csproj | Select-Object -First 1
+          dotnet build $proj.FullName -c Release
+
+      - name: Package the two files you need
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Recurse -Filter ECUManagerSidecar.exe | Where-Object { $_.FullName -match '\\bin\\Release\\' } | Select-Object -First 1
+          New-Item -ItemType Directory -Force out | Out-Null
+          Copy-Item $exe.FullName out/
+          Copy-Item "$($exe.FullName).config" out/
+          Compress-Archive -Path out/* -DestinationPath ECUManagerSidecar.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ECUManagerSidecar
+          path: out/
+
+      - name: Publish as a release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Sidecar build ${{ github.run_number }}
+          body: Copy ECUManagerSidecar.exe and ECUManagerSidecar.exe.config into the folder that contains ECUManager.exe.
+          files: ECUManagerSidecar.zip

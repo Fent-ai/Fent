@@ -1,0 +1,7 @@
+bin/
+obj/
+.vs/
+*.user
+# Never commit API keys, tune files, or Haltech's own files.
+*.key
+secrets*

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <!-- ECU Manager is a 32-bit-only program, so the launcher must be 32-bit too. -->
+    <PlatformTarget>x86</PlatformTarget>
+    <AssemblyName>ECUManagerSidecar</AssemblyName>
+    <RootNamespace>ClaudeSidecar</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <!-- Lets it build with just Visual Studio or the .NET SDK, no separate targeting pack needed. -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
